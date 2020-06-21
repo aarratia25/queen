@@ -1,0 +1,12 @@
+{
+  "/": {
+    "title": "AA - Home",
+    "description": "Empresa de desarrollo web",
+    "keywords": "Web, diseño, seo, development, design"
+  },
+  "/list": {
+    "title": "AA - List",
+    "description": "Empresa de desarrollo web",
+    "keywords": "Web, diseño, seo, development, design"
+  }
+}
