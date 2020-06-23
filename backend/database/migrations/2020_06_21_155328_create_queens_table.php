@@ -15,6 +15,10 @@ class CreateQueensTable extends Migration
     {
         Schema::create('queens', function (Blueprint $table) {
             $table->id();
+			$table->dateTime('queen_datetime');
+			$table->string('email');
+			$table->string('name');
+			$table->softDeletes();
             $table->timestamps();
         });
     }

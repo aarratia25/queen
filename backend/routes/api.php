@@ -19,3 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::resource('queen', 'QueenController');
+Route::get('dates', 'QueenController@index');
+Route::post('store', 'QueenController@store');
+Route::post('update/{queen}', 'QueenController@update');
+Route::post('destroy/{queen}', 'QueenController@destroy');
