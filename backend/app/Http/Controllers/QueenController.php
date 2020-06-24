@@ -23,7 +23,7 @@ class QueenController extends Controller
 		$queens = Queen::all();
 		$status = 200;
 		$msg = "Cita obtenidas exitosamente";
-        return response()->json(['status' => $status, 'msg' => $msg, 'data' => $queens]);
+        return response()->json(['status' => $status, 'msg' => $msg, 'available' => $queens]);
     }
 	
     public function datesbydate($date)
@@ -31,7 +31,7 @@ class QueenController extends Controller
 		$queens = Queen::where('queen_datetime','>=',$date . $this->initdate)->where('queen_datetime','<=',$date . $this->endate)->get();
 		$status = 200;
 		$msg = "Cita obtenidas exitosamente";
-        return response()->json(['status' => $status, 'msg' => $msg, 'data' => $queens]);
+        return response()->json(['status' => $status, 'msg' => $msg, 'available' => $queens]);
     }	
 
     /**
