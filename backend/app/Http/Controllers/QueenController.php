@@ -21,6 +21,11 @@ class QueenController extends Controller
     public function index()
     {
 		$queens = Queen::all();
+		foreach($queens as $queen){
+			$queen->start = $queen->queen_datetime;
+			$queen->end = Carbon::parse($queen->start)->addHour();
+			$queen->end = $queen->end->isoFormat('YYYY-MM-DD HH:mm:ss');
+		}		
 		$status = 200;
 		$msg = "Cita obtenidas exitosamente";
         return response()->json(['status' => $status, 'msg' => $msg, 'available' => $queens]);
@@ -31,6 +36,11 @@ class QueenController extends Controller
 		$queens = Queen::where('queen_datetime','>=',$date . $this->initdate)->where('queen_datetime','<=',$date . $this->endate)->get();
 		$status = 200;
 		$msg = "Cita obtenidas exitosamente";
+		foreach($queens as $queen){
+			$queen->start = $queen->queen_datetime;
+			$queen->end = Carbon::parse($queen->start)->addHour();
+			$queen->end = $queen->end->isoFormat('YYYY-MM-DD HH:mm:ss');
+		}
         return response()->json(['status' => $status, 'msg' => $msg, 'available' => $queens]);
     }	
 
