@@ -15,14 +15,24 @@ class QueenController extends Controller
      */
 	public $inittime = 8; 
 	public $endtime = 17; 
+	public $initdate =  " 00:00:00";
+	public $endate =  " 23:59:59";
 	 
     public function index()
     {
 		$queens = Queen::all();
-		$status = "OK";
+		$status = 200;
 		$msg = "Cita obtenidas exitosamente";
         return response()->json(['status' => $status, 'msg' => $msg, 'data' => $queens]);
     }
+	
+    public function datesbydate($date)
+    {
+		$queens = Queen::where('queen_datetime','>=',$date . $this->initdate)->where('queen_datetime','<=',$date . $this->endate)->get();
+		$status = 200;
+		$msg = "Cita obtenidas exitosamente";
+        return response()->json(['status' => $status, 'msg' => $msg, 'data' => $queens]);
+    }	
 
     /**
      * Store a newly created resource in storage.
@@ -33,7 +43,7 @@ class QueenController extends Controller
     public function store(Request $request)
     {
         //
-		$status = "OK";
+		$status = 200;
 		$msg = "Cita creada exitosamente";		
 		if($request->has('queen_datetime') && $request->has('name') && $request->has('email')){
 			$queen_datetime = new Carbon($request->queen_datetime);
@@ -49,7 +59,7 @@ class QueenController extends Controller
 				$msg = $available['msg'];
 			}
 		} else {
-			$status = "error";
+			$status = 500;
 			$msg = "Información insuficiente, la cita debe contener: Fecha y hora, Nombre y Correo.";
 		}
 		return response()->json(['status' => $status, 'msg' => $msg]);
@@ -62,7 +72,7 @@ class QueenController extends Controller
 		$available = true;
 		$timeshr = (int)$datetime->format('H');	
 		if($timeshr < $this->inittime || $timeshr > $this->endtime){
-			$status = "error";
+			$status = 500;
 			$msg = "Cita fuera del rango permitido";
 			$available = false;
 		} else {
@@ -70,7 +80,7 @@ class QueenController extends Controller
 			$available = true;
 			if($queen > 0){
 				$available = false;
-				$status = "error";
+				$status = 500;
 				$msg = "Cita en un horario no disponible";
 			}
 		}
@@ -87,7 +97,7 @@ class QueenController extends Controller
     public function update(Request $request, Queen $queen)
     {
         //
-		$status = "OK";
+		$status =200;
 		$msg = "Cita actualizada exitosamente";
 		if($request->has('queen_datetime') || $request->has('name') || $request->has('email')){
 			if($request->has('queen_datetime')){
@@ -109,7 +119,7 @@ class QueenController extends Controller
 			}
 			$queen->save();
 		} else {
-			$status = "error";
+			$status = 500;
 			$msg = "Información insuficiente, la cita debe contener: Fecha y hora, Nombre y Correo.";
 		}
 	//	$queen->name = 'New Flight Name';
@@ -127,7 +137,7 @@ class QueenController extends Controller
     public function destroy(Queen $queen)
     {
         //
-		$status = "OK";
+		$status = 200;
 		$msg = "Cita eliminada exitosamente";			
 		$queen->delete();
 		return response()->json(['status' => $status, 'msg' => $msg]);
