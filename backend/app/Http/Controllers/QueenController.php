@@ -14,7 +14,7 @@ class QueenController extends Controller
      * @return \Illuminate\Http\Response
      */
 	public $inittime = 8; 
-	public $endtime = 17; 
+	public $endtime = 16; 
 	public $initdate =  " 00:00:00";
 	public $endate =  " 23:59:59";
 	 
@@ -56,21 +56,27 @@ class QueenController extends Controller
 		$status = 200;
 		$msg = "Cita creada exitosamente";		
 		if($request->has('queen_datetime') && $request->has('name') && $request->has('email')){
-			$queen_datetime = new Carbon($request->queen_datetime);
-			$available = $this->available($queen_datetime);
-			if($available['available']){	
-				$queen = new Queen;
-				$queen->name = $request->name;
-				$queen->email = $request->email;
-				$queen->queen_datetime = $queen_datetime->toDateTimeString();
-				$queen->save();
+			//dd(is_null($request->queen_datetime));
+			if(!is_null($request->queen_datetime) && !is_null($request->name) && !is_null($request->email)){
+				$queen_datetime = new Carbon($request->queen_datetime);
+				$available = $this->available($queen_datetime);
+				if($available['available']){	
+					$queen = new Queen;
+					$queen->name = $request->name;
+					$queen->email = $request->email;
+					$queen->queen_datetime = $queen_datetime->toDateTimeString();
+					$queen->save();
+				} else {
+					$status = $available['status'];
+					$msg = $available['msg'];
+				}
 			} else {
-				$status = $available['status'];
-				$msg = $available['msg'];
+				$status = 500;
+				$msg = "Información insuficiente, la cita debe contener: Fech, hora, nombre y correo.";
 			}
 		} else {
 			$status = 500;
-			$msg = "Información insuficiente, la cita debe contener: Fecha y hora, Nombre y Correo.";
+			$msg = "Información insuficiente, la cita debe contener: Fech, hora, nombre y correo.";
 		}
 		return response()->json(['msg' => $msg], $status);
     }
@@ -81,12 +87,18 @@ class QueenController extends Controller
 		$msg = "";
 		$available = true;
 		$timeshr = (int)$datetime->format('H');	
+		
 		if($timeshr < $this->inittime || $timeshr > $this->endtime){
 			$status = 500;
 			$msg = "Cita fuera del rango permitido";
 			$available = false;
 		} else {
-			$queen = Queen::where('queen_datetime', $datetime->toDateTimeString())->count();
+			$starttime = $datetime->toDateTimeString();
+			$endtime = Carbon::parse($starttime)->addHour();
+			$endtime = $endtime->isoFormat('YYYY-MM-DD HH:mm:ss');
+			$beforetime = Carbon::parse($starttime)->subHour();
+			$beforetime = $beforetime->isoFormat('YYYY-MM-DD HH:mm:ss');
+			$queen = Queen::where('queen_datetime', '>=',$beforetime)->where('queen_datetime', '<=',$endtime)->count();
 			$available = true;
 			if($queen > 0){
 				$available = false;
@@ -111,21 +123,27 @@ class QueenController extends Controller
 		$msg = "Cita actualizada exitosamente";
 		if($request->has('queen_datetime') || $request->has('name') || $request->has('email')){
 			if($request->has('queen_datetime')){
-				$queen_datetime = new Carbon($request->queen_datetime);
-				$available = $this->available($queen_datetime);
-				if($available['available']){	
-					$queen->queen_datetime = $queen_datetime->toDateTimeString();
-					//$queen->save();
-				} else {
-					$status = $available['status'];
-					$msg = $available['msg'];
+				if(!empty($request->queen_datetime)){
+					$queen_datetime = new Carbon($request->queen_datetime);
+					$available = $this->available($queen_datetime);
+					if($available['available']){	
+						$queen->queen_datetime = $queen_datetime->toDateTimeString();
+						//$queen->save();
+					} else {
+						$status = $available['status'];
+						$msg = $available['msg'];
+					}				
 				}				
 			}
 			if($request->has('name')){
-				$queen->name = $request->name;		
+				if(!empty($request->name)){
+					$queen->name = $request->name;	
+				}				
 			}
 			if($request->has('email')){
-				$queen->email = $request->email;
+				if(!empty($request->email)){
+					$queen->email = $request->email;
+				}
 			}
 			$queen->save();
 		} else {
