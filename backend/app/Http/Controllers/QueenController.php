@@ -28,7 +28,7 @@ class QueenController extends Controller
 		}		
 		$status = 200;
 		$msg = "Cita obtenidas exitosamente";
-        return response()->json(['status' => $status, 'msg' => $msg, 'available' => $queens]);
+        return response()->json(['msg' => $msg, 'available' => $queens], $status);
     }
 	
     public function datesbydate($date)
@@ -41,7 +41,7 @@ class QueenController extends Controller
 			$queen->end = Carbon::parse($queen->start)->addHour();
 			$queen->end = $queen->end->isoFormat('YYYY-MM-DD HH:mm:ss');
 		}
-        return response()->json(['status' => $status, 'msg' => $msg, 'available' => $queens]);
+        return response()->json(['msg' => $msg, 'available' => $queens], $status);
     }	
 
     /**
@@ -72,7 +72,7 @@ class QueenController extends Controller
 			$status = 500;
 			$msg = "Información insuficiente, la cita debe contener: Fecha y hora, Nombre y Correo.";
 		}
-		return response()->json(['status' => $status, 'msg' => $msg]);
+		return response()->json(['msg' => $msg], $status);
     }
 
     public function available($datetime)
@@ -135,7 +135,7 @@ class QueenController extends Controller
 	//	$queen->name = 'New Flight Name';
 
 	//	$flight->save();
-		return response()->json(['status' => $status, 'msg' => $msg]);
+		return response()->json(['msg' => $msg], $status);
     }
 
     /**
@@ -150,6 +150,6 @@ class QueenController extends Controller
 		$status = 200;
 		$msg = "Cita eliminada exitosamente";			
 		$queen->delete();
-		return response()->json(['status' => $status, 'msg' => $msg]);
+		return response()->json(['msg' => $msg], $status);
     }
 }
